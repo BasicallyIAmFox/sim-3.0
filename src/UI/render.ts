@@ -2,6 +2,7 @@ import data from "../Data/data.json" with { type: "json" };
 import { findIndex, getIndexFromTheory } from "../Utils/helpers";
 import { qs, qsa, event, ce, removeAllChilds } from "../Utils/DOMhelpers";
 import { getSimState } from "./simState";
+import { applyCustomTheoryParameters } from "./ctSettings";
 
 //Inputs
 const theorySelector = qs<HTMLSelectElement>(".theory");
@@ -137,7 +138,9 @@ function theoryUpdate() {
   const currentTheoryStrats = Object.keys(data.theories[currentTheory].strats).filter(
     (strat) => (data.theories as TheoryDataStructure)[currentTheory].strats[strat].UI_visible !== false
   );
+  
   populateSelectElement(stratSelector, data.stratCategories.concat(currentTheoryStrats));
+  applyCustomTheoryParameters(currentTheory);
   populateSingleSimFields(true);
 }
 

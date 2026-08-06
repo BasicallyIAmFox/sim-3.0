@@ -1,6 +1,7 @@
 import jsonData from "../Data/data.json" with { type: "json" };
 import { getTheoryFromIndex, isMainTheory, parseLog10String, reverseMulti } from "../Utils/helpers";
 import { qs } from "../Utils/DOMhelpers";
+import { parseCustomTheorySettings } from "../UI/ctSettings";
 
 //Inputs
 const modeSelector = qs<HTMLSelectElement>(".mode");
@@ -18,7 +19,6 @@ const hard_active = qs<HTMLInputElement>(".hard-active");
 //Setting Inputs
 const dtOtp = qs(".dtOtp");
 const ddtOtp = qs(".ddtOtp");
-const mfDepthOtp = qs(".mfDepthOtp");
 const boughtVarsDeltaSlider = qs<HTMLInputElement>(".boughtVarsDelta");
 const themeSelector = qs<HTMLSelectElement>(".themeSelector");
 const simAllStrats = qs<HTMLSelectElement>(".simallstrats");
@@ -31,14 +31,14 @@ function parseSettings(): Settings {
     return {
         dt: parseFloat(dtOtp.textContent ?? "1.5"),
         ddt: parseFloat(ddtOtp.textContent ?? "1.0001"),
-        mfResetDepth: parseInt(mfDepthOtp.textContent ?? "0"),
         boughtVarsDelta: parseInt(boughtVarsDeltaSlider.value),
         theme: themeSelector.value,
         simAllStrats: simAllStrats.value as SettingsSimAllStratsMode,
         completedCTs: completedCTs.value as SettingsCompletedCTsMode,
         showA23: showA23.checked,
         showUnofficials: showUnofficials.checked,
-        totalPurchaseList: generateTotalPurchaseList.checked
+        totalPurchaseList: generateTotalPurchaseList.checked,
+        ctSettings: parseCustomTheorySettings(),
     }
 }
 
@@ -88,6 +88,15 @@ function parseSigma(required: boolean): number {
         }
         return 0;
     }
+}
+
+export function parseInteger(input: string, errorMessage: string): { value: any, errorMessage?: string } {
+    const value = parseInt(input);
+
+    if (Number.isNaN(value) || value !== parseFloat(input))
+        return { value: null, errorMessage: errorMessage };
+    
+    return { value };
 }
 
 function parseSingleSim(): SingleSimQuery {

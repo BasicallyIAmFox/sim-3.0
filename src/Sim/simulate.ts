@@ -18,12 +18,13 @@ import csr2 from "../Theories/CTs/CSR2";
 import fi from "../Theories/CTs/FI";
 import fp from "../Theories/CTs/FP";
 import rz from "../Theories/CTs/RZ";
-import mf from "../Theories/CTs/MF";
+import mf, { applyCustomSettings as mfApplySettings } from "../Theories/CTs/MF";
 import bap from "../Theories/CTs/BaP";
 import bt from "../Theories/Unofficial-CTs/BT";
 import tc from "../Theories/Unofficial-CTs/TC";
 import fs from "../Theories/Unofficial-CTs/FS";
 import bd from "../Theories/Unofficial-CTs/BD";
+import { ParametersBuilder } from "../UI/ctSettings";
 
 const output = qs(".output");
 
@@ -49,6 +50,10 @@ const simFunction: { [key in theoryType]: ((data: theoryData) => Promise<simResu
     TC: tc,
     FS: fs,
     BD: bd
+}
+
+const uiFunction: { [key in theoryType]?: ((ctParametersBuilder: ParametersBuilder) => void) } = {
+    MF: mfApplySettings,
 }
 
 async function singleSim(query: SingleSimQuery): Promise<SingleSimResponse> {
@@ -373,6 +378,12 @@ async function stepChainSim(query: StepChainQuery): Promise<StepSimResponse> {
         responseType: "step",
         results: results
     }
+}
+
+export function applyTheorySettings(theoryType: theoryType, ctParametersBuilder: ParametersBuilder) {
+    let settingsFn = uiFunction[theoryType] || (() => {});
+
+    settingsFn(ctParametersBuilder);
 }
 
 export async function simulate(query: SimQuery): Promise<SimResponse> {

@@ -17,6 +17,14 @@ function didSettingsChange(settings1: Settings, settings2: Settings) {
     || settings1.boughtVarsDelta !== settings2.boughtVarsDelta
     || settings1.simAllStrats !== settings2.simAllStrats
     || settings1.totalPurchaseList !== settings2.totalPurchaseList
+    || (settings1.ctSettings.size !== settings2.ctSettings.size || (() => {
+        for (const [key, value] of settings1.ctSettings) {
+            if (settings2.ctSettings.get(key) !== value) {
+                return true;
+            }
+        }
+        return false;
+    })())
 }
 
 function cacheFilterQueryAll(query: SimAllQuery): SimAllQuery {
@@ -34,7 +42,6 @@ function cacheFilterQueryAll(query: SimAllQuery): SimAllQuery {
         const theory = getTheoryFromIndex(i);
         if (isMainTheory(theory) && query.sigma !== cachedQuery.sigma) { return val; }
         if (theory === "EF" && query.settings.showA23 !== cachedQuery.settings.showA23) { return val; }
-        if (theory === "MF" && query.settings.mfResetDepth !== cachedQuery.settings.mfResetDepth) { return val; }
         if (val == cachedQuery.values[i]) { return -5; }
         return val;
     })
